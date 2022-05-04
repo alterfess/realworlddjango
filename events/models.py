@@ -7,6 +7,7 @@ class Event(models.Model):
     description = models.TextField(default='', verbose_name='Описание')
     date_start = models.DateTimeField(verbose_name='Дата начала')
     participants_number = models.PositiveSmallIntegerField(verbose_name='Количество участников')
+    is_private = models.BooleanField(default=False, verbose_name='Частное')
 
     def __str__(self):
         return self.title
