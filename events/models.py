@@ -1,4 +1,6 @@
+from django.conf import settings
 from django.contrib.auth.models import User
+from django.urls import reverse
 from django.db import models
 
 
@@ -7,6 +9,7 @@ class Category(models.Model):
 
     def display_event_count(self):
         return self.events.count()
+
     display_event_count.short_description = 'Количество событий'
 
     def __str__(self):
@@ -41,6 +44,7 @@ class Event(models.Model):
         (FULLNESS_FULL, FULLNESS_LEGEND_FULL),
     )
 
+    logo = models.ImageField(upload_to='events/events/', blank=True, null=True)
     title = models.CharField(max_length=200, default='', verbose_name='Название')
     description = models.TextField(default='', verbose_name='Описание')
     date_start = models.DateTimeField(verbose_name='Дата начала')
@@ -52,6 +56,22 @@ class Event(models.Model):
     class Meta:
         verbose_name = 'Событие'
         verbose_name_plural = 'События'
+
+    @property
+    def rate(self):
+        all_reviews = self.reviews.count()
+        sum_rate = sum([i.rate for i in self.reviews.all()])
+        try:
+            return round(sum_rate / all_reviews, 1)
+        except:
+            return 0
+
+    @property
+    def logo_url(self):
+        return self.logo.url if self.logo else f'{settings.STATIC_URL}images/svg-icon/event.svg'
+
+    def get_absolute_url(self):
+        return reverse('events:event_detail', args=[str(self.pk)])
 
     def __str__(self):
         return self.title
@@ -90,11 +110,13 @@ class Event(models.Model):
 
     def display_enroll_count(self):
         return self.get_enroll_count()
+
     display_enroll_count.short_description = 'Количество записей'
 
     def display_places_left(self):
         places_left = self.get_places_left()
         return f'{places_left} ({self.get_fullness_legend(places_left=places_left)})'
+
     display_places_left.short_description = 'Осталось мест'
 
 
