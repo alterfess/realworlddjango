@@ -39,7 +39,8 @@ def create_review(request):
         'msg': '',
         'rate': request.POST.get('rate'),
         'text': request.POST.get('text'),
-        'created': datetime.date.today().strftime('%d.%m.%Y')
+        'created': datetime.date.today().strftime('%d.%m.%Y'),
+        'user_name': ''
     }
 
     messages = {
