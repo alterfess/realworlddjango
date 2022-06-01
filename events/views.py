@@ -39,44 +39,33 @@ def create_review(request):
         'msg': '',
         'rate': request.POST.get('rate'),
         'text': request.POST.get('text'),
-        'created': datetime.date.today().strftime('%d.%m.%Y')
-    }
-
-    messages = {
-        'is_not_registered': 'Отзывы могут оставлять только зарегистрированные пользователи',
-        'is_not_rated_or_texted':'Оценка и текст отзыва - обязательные поля',
-        'is_reviewed': 'Вы уже оставляли отзыв к этому событию',
-        'is_empty': 'Такого события не существует',
+        'created': datetime.date.today().strftime('%d.%m.%Y'),
+        'user_name': ''
     }
 
     pk = request.POST.get('event_id', '')
-    rate = request.POST.get('rate', '')
-    text = request.POST.get('text', '')
-
     if not pk:
-        data['msg'] = messages['is_empty']
+        data['msg'] = 'Событие не найдено'
         data['ok'] = False
         return JsonResponse(data)
-    else:
 
+    else:
         event = Event.objects.get(pk=pk)
 
         if not request.user.is_authenticated:
-            data['msg'] = messages['is_not_registered']
+            data['msg'] = 'Отзывы могут отправлять только зарегистрированные пользователи'
             data['ok'] = False
             return JsonResponse(data)
 
         data['user_name'] = request.user.__str__()
 
-        if not rate or not text:
-            data['msg'] = messages['is_not_rated_or_texted']
+        if Review.objects.filter(user=request.user, event=event).exists():
+            data['msg'] = 'Вы уже отправляли отзыв к этому событию'
             data['ok'] = False
-            return JsonResponse(data)
 
-        elif Review.objects.filter(user=request.user, event=event).exists():
-            data['msg'] = messages['is_reviewed']
+        elif data['text'] == '' or data['rate'] == '':
+            data['msg'] = 'Оценка и текст отзыва - обязательные поля'
             data['ok'] = False
-            return JsonResponse(data)
 
         else:
             new_review = Review(
@@ -89,5 +78,6 @@ def create_review(request):
             )
 
             new_review.save()
-            return JsonResponse(data)
+
+        return JsonResponse(data)
 
