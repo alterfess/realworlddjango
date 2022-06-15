@@ -123,12 +123,18 @@
                                     </p>
                                     <div class="button-list mt-5 mb-5 d-flex">
                                         <form action="#" method="post" class="me-2">
-                                            <button data-test="enroll"
-                                                    type="submit"
-                                                    class="btn btn-success"
-                                                    disabled>
-                                                Записаться
-                                            </button>
+                                            {% if event.get_places_left == 0 %}
+                                                <button data-test="enroll"
+                                                        type="button"
+                                                        class="btn btn-success"
+                                                        disabled="">Мест нет
+                                                </button>
+                                            {% else %}
+                                                <button data-test="enroll"
+                                                        type="button"
+                                                        class="btn btn-success">Записаться
+                                                </button>
+                                            {% endif %}
                                         </form>
                                         <a href="#" class="btn btn-primary me-2">
                                             <i class="bi bi-pencil"></i>Изменить
@@ -148,14 +154,18 @@
                                                 {{ event.display_enroll_count}} из {{ event.participants_number }}
                                             </h4>
                                             <p data-test="places_left">
-                                                осталось мест: {{ event.display_places_left }}
+                                                {% if event.get_places_left == 0 %}
+                                                осталось мест: мест нет
+                                                {% else %}
+                                                осталось мест: {{ event.get_places_left }}
+                                                {% endif %}
                                             </p>
                                             <div class="progress" style="height: 5px;">
                                                 <div data-test="progressbar"
                                                      class="progress-bar bg-success"
                                                      role="progressbar"
-                                                     style="width: 60%"
-                                                     aria-valuenow="60"
+                                                     style="width: {% widthratio event.display_enroll_count event.participants_number 100 %}%"
+                                                     aria-valuenow="{% widthratio event.display_enroll_count event.participants_number 100 %}"
                                                      aria-valuemin="0"
                                                      aria-valuemax="100">
                                                 </div>
@@ -203,38 +213,25 @@
                             </form>
                         </div>
                     </div>
-                    <div class="card my-3">
-                        <div class="card-header pb-0">
-                            <h5 class="card-title">
-                                Виталий Петров
-                                <span class="badge bg-warning">5</span>
-                            </h5>
+
+
+                    {% for review in event.reviews.all %}
+                        <div class="card my-3">
+                            <div class="card-header pb-0">
+                                <h5 class="card-title">
+                                    {{ review.user.first_name }} {{ review.user.last_name }}
+                                    <span class="badge bg-warning">{{review.rate}}</span>
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <img src="{% static 'images/users/men.svg'%}" class="img-fluid me-3" alt="user">
+                                <p data-test="review_text" class="mb-0 d-inline">
+                                    {{ review.text}}
+                                </p>
+                                <p data-test="review_date" class="mt-3">{{review.created|date:"d.m.Y"}}</p>
+                            </div>
                         </div>
-                        <div class="card-body">
-                            <img src="{% static 'images/users/men.svg'%}" class="img-fluid me-3" alt="user">
-                            <p data-test="review_text" class="mb-0 d-inline">
-                                Ох, давно я так не веселился!!! Все было круто. Надо повторить)
-                            </p>
-                            <p data-test="review_date" class="mt-3">01.01.1900</p>
-                        </div>
-                    </div>
-                    <div class="card my-3">
-                        <div class="card-header pb-0">
-                            <h5 class="card-title">
-                                Виталий Петров
-                                <span class="badge bg-warning">5</span>
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <img src="{% static 'images/users/men.svg'%}" class="img-fluid me-3" alt="user">
-                            <p data-test="review_text" class="mb-0 d-inline">
-                                Ох, давно я так не веселился!!! Все было круто. Надо повторить)
-                            </p>
-                            <p data-test="review_date" class="mt-3">01.01.1900</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                    {% endfor %}
         </div>
         <!-- End CONTAINER_BAR -->
 
