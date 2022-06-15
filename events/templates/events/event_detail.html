@@ -81,7 +81,7 @@
         <div class="container-fluid bg-white py-3">
             <div class="row align-items-center justify-content-between">
                 <div class="col-auto text-center ms-4">
-                    <h4>Real World Django</h4>
+                    <h4>Событие</h4>
                 </div>
                 <div class="col-auto text-center me-4">
                    {% if request.user and request.user.is_authenticated %}
@@ -106,19 +106,20 @@
                                     <img src="{% static 'images/svg-icon/event.svg'%}" class="img-fluid" alt="event">
                                 </div>
                                 <div class="col-lg-6 col-xl-7">
-                                    <p data-test="is_private" class="badge bg-dark">Private</p>
-                                    <h2 data-test="event_title">Вечерний субботник во вторник</h2>
-                                    <p data-test="event_rate" class="badge bg-warning">4.5 / 5</p>
-                                    <h5 data-test="event_category" class="mt-3">Спортивный турнир</h5>
-                                    <p data-test="event_description" class="my-4">Мы будем круто веселиться, а еще будут
-                                        приглашенные звезды!</p>
+                                    {% if event.is_private %}
+                                        <p data-test="is_private" class="badge bg-dark">Private</p>
+                                    {% endif %}
+                                    <h2 data-test="event_title">{{ event.title }}</h2>
+                                    <p data-test="event_rate" class="badge bg-warning">{{ event.rate }} / 5</p>
+                                    <h5 data-test="event_category" class="mt-3">{{ event.category }}</h5>
+                                    <p data-test="event_description" class="my-4">{{ event.description }}</p>
                                     <ul>
-                                        <li data-test="feature">Приглашенная знаменитось</li>
-                                        <li data-test="feature">Живая музыка</li>
-                                        <li data-test="feature">Песни у костра</li>
+                                        {% for feature in event.features.all %}
+                                            <li>{{feature}}</li>
+                                        {% endfor %}
                                     </ul>
                                     <p>
-                                        дата: <strong>01.01.2001 в 21:35</strong>
+                                        дата: <strong>{{event.date_start|date:"d.m.Y"}} в {{event.date_start|date:"H:i"}}</strong>
                                     </p>
                                     <div class="button-list mt-5 mb-5 d-flex">
                                         <form action="#" method="post" class="me-2">
@@ -144,10 +145,10 @@
                                         <div class="card-body">
                                             <i class="bi bi-emoji-smile text-success" style="font-size: 3rem"></i>
                                             <h4 data-test="enroll_count">
-                                                79 из 100
+                                                {{ event.display_enroll_count}} из {{ event.participants_number }}
                                             </h4>
                                             <p data-test="places_left">
-                                                осталось мест: 21
+                                                осталось мест: {{ event.display_places_left }}
                                             </p>
                                             <div class="progress" style="height: 5px;">
                                                 <div data-test="progressbar"
