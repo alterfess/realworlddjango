@@ -84,8 +84,12 @@
                     <h4>Real World Django</h4>
                 </div>
                 <div class="col-auto text-center me-4">
-                    <a href="#" class="btn btn-outline-primary">Войти</a>
-                    <a href="#" class="btn btn-primary">Регистрация</a>
+                   {% if request.user and request.user.is_authenticated %}
+                       <a href="#" class="btn btn-outline-primary">+ Добавить событие</a>
+                    {% else %}
+                       <a href="#" class="btn btn-outline-primary">Войти</a>
+                       <a href="#" class="btn btn-primary">Регистрация</a>
+                    {% endif %}
                 </div>
             </div>
         </div>
