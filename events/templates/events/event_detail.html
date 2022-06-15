@@ -115,7 +115,7 @@
                                     <p data-test="event_description" class="my-4">{{ event.description }}</p>
                                     <ul>
                                         {% for feature in event.features.all %}
-                                            <li>{{feature}}</li>
+                                            <li data-test="feature">{{feature}}</li>
                                         {% endfor %}
                                     </ul>
                                     <p>
